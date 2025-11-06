@@ -1,181 +1,280 @@
-<!DOCTYPE html>
-<html lang="en">
+ <!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa do Trânsito</title>
+    <title>Sistema de Trânsito Inteligente de POA | Mapa e Prevenção</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playwrite+DE+SAS:wght@100..400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="map.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+DE+SAS:wght@100..400&family=Roboto:wght@300;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0056b3; 
+            --secondary-color: #1e90ff; 
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --highlight-color: #ff8c00; 
+            --safe-color: #28a745; 
+            --red-alert: red;
+        }
+        /* Estilos base (mantidos do original para consistência) */
+        body { background-color: var(--background-color); color: var(--text-color); font-family: 'Roboto', sans-serif; text-align: center; margin: 0; padding: 0; }
+        .landing-container { width: 90%; max-width: 1100px; padding: 40px; margin: 50px auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+        h1 { font-family: 'Playwrite DE SAS', cursive; font-size: 3em; color: var(--primary-color); margin-bottom: 10px; }
+        .slogan { font-size: 1.5em; color: #6c757d; margin-bottom: 40px; }
+        .features { display: flex; justify-content: space-around; margin-bottom: 50px; flex-wrap: wrap; }
+        .feature-item { flex-basis: 30%; padding: 20px 10px; border-radius: 10px; transition: transform 0.3s, box-shadow 0.3s; }
+        .feature-item:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+        .feature-item i { font-size: 2.5em; color: var(--secondary-color); margin-bottom: 10px; }
+        .cta-button { display: inline-block; padding: 15px 30px; font-size: 1.2em; font-weight: bold; color: white; background-color: var(--highlight-color); border: none; border-radius: 8px; text-decoration: none; transition: background-color 0.3s, transform 0.1s; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4); }
+        .cta-button:hover { background-color: #e67e22; transform: translateY(-2px); }
+        .prevention-section { background-color: #e8f5e9; padding: 30px 20px; border-radius: 10px; margin-top: 30px; }
+        .prevention-section h2 { color: var(--safe-color); font-size: 2em; margin-bottom: 25px; }
+        .prevention-grid { display: flex; justify-content: space-around; gap: 20px; }
+        .prevention-tip { flex-basis: 30%; }
+        .prevention-tip i { font-size: 3em; color: var(--safe-color); margin-bottom: 10px; border: 3px solid var(--safe-color); border-radius: 50%; padding: 15px; }
+        .prevention-tip h3 { color: var(--text-color); font-size: 1.2em; }
+        .map-section-header { padding: 40px 0 20px; background-color: var(--primary-color); color: white; margin-top: 30px; }
+        .map-section-header h2 { font-family: 'Playwrite DE SAS', sans-serif; font-size: 2.5em; margin: 0; }
+        #map { height: 500px; width: 90%; margin: 20px auto; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+        #location-message { margin: 10px auto; color: #fff; font-weight: bold; }
+        /* Botão de Localização Reposicionado para o centro do container do mapa */
+        #locate-button { position: absolute; top: 120px; right: 6%; z-index: 1000; background-color: white; border: 2px solid #ccc; border-radius: 5px; padding: 8px; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); font-size: 1.2em; color: var(--primary-color); }
+        
+        /* Ícone de Acidente (Simulação de Alerta) */
+        .accident-icon { background-color: var(--red-alert); border-radius: 50%; border: 3px solid white; color: white; text-align: center; line-height: 24px; font-weight: bold; font-size: 16px; width: 24px; height: 24px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); } }
+        
+        /* Estilos do Popup */
+        .news-status { font-weight: bold; color: var(--highlight-color); }
+        .weather-status { font-weight: bold; color: var(--secondary-color); }
+        .popup-info { line-height: 1.6; text-align: left; }
+
+        /* Responsividade (Mantida do original) */
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .landing-container { margin: 20px auto; padding: 20px; }
+            .features, .prevention-grid { flex-direction: column; gap: 20px; }
+            .feature-item, .prevention-tip { flex-basis: 100%; }
+            .map-section-header h2 { font-size: 2em; }
+            #locate-button { top: 75px; right: 5%; }
+        }
+    </style>
+    
 </head>
 <body>
-  
-   <div class="container">
-    <h1>Mapa do Trânsito e acidentes</h1>
-    <p>Veja o mapa do trânsito em tempo real na cidade de Porto Alegre-RS</p>
+    
+    <div class="landing-container">
+        
+        <header>
+            <h1>Sistema de Monitoramento de Trânsito Inteligente de POA</h1>
+            <p class="slogan">Navegue pela cidade com inteligência. Sua segurança em primeiro lugar.</p>
+        </header>
 
-    <div id="map">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
-  <style>
-    #map {
-      height: 500px;
-      width: 100%;
-    }
-  </style>
-</head>
-<body>
+        <a href="#map-anchor" class="cta-button">
+            Ver Mapa em Tempo Real
+        </a>
+        
+        <hr style="margin: 50px 0; border-color: #eee;">
 
-<h2>Mapa Interativo com Leaflet</h2>
-<div id="map"></div>
+        <div class="features">
+            <div class="feature-item">
+                <i class="fas fa-route"></i>
+                <h3>Trânsito em Tempo Real</h3>
+                <p>Veja o fluxo das principais vias e planeje sua rota com base na simulação de congestionamentos.</p>
+            </div>
+            
+            <div class="feature-item">
+                <i class="fas fa-car-crash" style="color: red;"></i>
+                <h3>Pontos Críticos de Acidentes</h3>
+                <p>Identifique cruzamentos de alto risco e acidentes atuais, incluindo cobertura de noticiários.</p>
+            </div>
+            
+            <div class="feature-item">
+                <i class="fas fa-cloud-sun"></i>
+                <h3>Condições do Tempo</h3>
+                <p>Previsão do tempo simulada para cada local, essencial para dirigir com segurança.</p>
+            </div>
+        </div>
+        
+        <hr style="margin: 50px 0; border-color: #eee;">
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-  // Cria o mapa e define a posição inicial
-  var map = L.map('map').setView([-15.78, -47.93], 4); // Coordenadas do Brasil
-
-  // Adiciona o mapa base (usando OpenStreetMap)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
-
-  // Adiciona um marcador
-  L.marker([-15.78, -47.93]).addTo(map)
-    .bindPopup('Você está em Brasília!')
-    .openPopup();
-</script>
+        <section class="prevention-section">
+            <h2>Como Evitar Acidentes: Dicas Essenciais</h2>
+            <div class="prevention-grid">
+                
+                <div class="prevention-tip">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>Respeite os Limites</h3>
+                    <p>A velocidade é a principal causa de acidentes graves. Adeque a velocidade à condição da via e do tempo.</p>
+                </div>
+                
+                <div class="prevention-tip">
+                    <i class="fas fa-mobile-alt" style="color: var(--highlight-color);"></i>
+                    <h3>Celular Fica no Bolso</h3>
+                    <p>Mantenha o foco total na direção. O uso do celular triplica o risco de colisão e distração.</p>
+                </div>
+                
+                <div class="prevention-tip">
+                    <i class="fas fa-hand-holding-medical"></i>
+                    <h3>Mantenha a Distância</h3>
+                    <p>Use a regra dos dois segundos para manter uma distância segura do veículo à frente, especialmente na chuva.</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p style="font-size: 0.9em; color: #999; margin-top: 30px;">&copy; 2025 POA Smart Traffic. Todos os direitos reservados.</p>
+        </footer>
 
     </div>
+    
+    <section id="map-anchor" class="map-section-header">
+        <div class="container">
+            <h2>Mapa Interativo em Tempo Real</h2>
+            <p id="location-message">Buscando sua localização. Por favor, autorize o acesso.</p>
+        </div>
+    </section>
 
+    <div style="background-color: white; padding-bottom: 40px; position: relative;">
+        <button id="locate-button" onclick="map.locate({setView: true, maxZoom: 16})">
+            <i class="fas fa-location-crosshairs"></i>
+        </button>
+
+        <div id="map"></div>
+        <p style="font-size: 0.8em; color: #666;">Dados de mapa base fornecidos por &copy; OpenStreetMap contributors. <span id="update-time">(Atualização a cada 10s)</span></p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        // === VARIÁVEIS GLOBAIS E CONFIGURAÇÃO ===
+        const portoAlegreCoords = [-30.0346, -51.2177]; 
+        const locMessage = document.getElementById('location-message');
+        const updateTimeDisplay = document.getElementById('update-time');
+        
+        var map = L.map('map').setView(portoAlegreCoords, 12);
+        const riskMarkersLayer = L.layerGroup().addTo(map);
+        let userLocationMarker = null; 
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        const AccidentIcon = L.divIcon({
+            className: 'accident-icon',
+            html: '!',
+            iconSize: [24, 24],
+            popupAnchor: [0, -12]
+        });
+
+        // Pontos de Risco Baseados em Dados Reais da EPTC/Notícias de POA
+        const pontosDeRiscoData = [
+            { coords: [-30.0460, -51.1818], nome: "Ipiranga x Salvador França", detalhe: "Maior volume de acidentes de colisão no geral, ponto mais perigoso (2021/2022)." }, 
+            { coords: [-30.0525, -51.2010], nome: "Ipiranga x Azenha", detalhe: "Alto índice de ocorrências, entre os três mais perigosos." }, 
+            { coords: [-30.0385, -51.2260], nome: "Ipiranga x Borges de Medeiros", detalhe: "Ponto de grande fluxo e risco, entre os três mais perigosos." }, 
+            { coords: [-30.0430, -51.1920], nome: "Ipiranga x Silva Só / São Manoel", detalhe: "Concentração de acidentes, 2º maior em ocorrências em 2017." }, 
+            { coords: [-29.9880, -51.1390], nome: "Dona Margarida x Edu Chaves", detalhe: "Ponto crítico na Zona Norte, alto número de colisões/atropelamentos." }, 
+            { coords: [-30.0400, -51.2170], nome: "Av. Bento Gonçalves", detalhe: "Via com maior quantidade de acidentes fatais (2019-2023)." }, 
+            { coords: [-30.0050, -51.1550], nome: "Av. Assis Brasil", detalhe: "Volume de tráfego enorme, segunda via em acidentes fatais." }, 
+            { coords: [-30.0620, -51.1780], nome: "Av. Protásio Alves", detalhe: "Via com alta acidentalidade e risco de atropelamento. (Simulação de ponto)." }, 
+            { coords: [-30.0500, -51.2250], nome: "Av. Padre Cacique", detalhe: "Histórico de acidentes, incluindo fatais (Simulação de ponto)." }, 
+            { coords: [-30.0150, -51.2290], nome: "Av. Farrapos x Sarmento Barata", detalhe: "Histórico de colisões/atropelamentos." }, 
+            { coords: [-30.0300, -51.2100], nome: "Túnel da Conceição / Entorno", detalhe: "Fluxo rápido e entrada no centro. (Simulado)" },
+        ];
+
+        // === FUNÇÕES DE SIMULAÇÃO ===
+        function simulateWeather() {
+            const weatherOptions = [
+                { status: "Céu Limpo", icon: "☀️", color: "#1e90ff" },
+                { status: "Nublado", icon: "☁️", color: "#6c757d" },
+                { status: "Chuva Fraca", icon: "🌧️", color: "#28a745" },
+                { status: "Chuva Forte (Risco)", icon: "⛈️", color: "red" },
+                { status: "Neblina", icon: "🌫️", color: "#6c757d" }
+            ];
+            const randomIndex = Math.floor(Math.random() * weatherOptions.length);
+            return weatherOptions[randomIndex];
+        }
+
+        function simulateNews() {
+            const newsOptions = ["GZH Trânsito (AO VIVO)", "Record RS", "Correio do Povo", "Não Reportado no momento"];
+            return newsOptions[Math.floor(Math.random() * newsOptions.length)];
+        }
+
+        // === FUNÇÃO PRINCIPAL DE ATUALIZAÇÃO DO MAPA ===
+        function updateMapData() {
+            riskMarkersLayer.clearLayers(); 
+            updateTimeDisplay.textContent = `Atualizado: ${new Date().toLocaleTimeString('pt-BR')}`;
+            
+            // SIMULAÇÃO: Seleciona um número aleatório de pontos ativos
+            const minActive = 3;
+            const maxActive = Math.min(pontosDeRiscoData.length, 8); 
+            const activeAccidentsCount = Math.floor(Math.random() * (maxActive - minActive + 1)) + minActive; 
+            
+            const shuffledPoints = pontosDeRiscoData.sort(() => 0.5 - Math.random());
+            const activePoints = shuffledPoints.slice(0, activeAccidentsCount);
+
+            activePoints.forEach(ponto => {
+                const weather = simulateWeather();
+                const noticiario = simulateNews();
+                
+                const noticiarioHtml = noticiario === "Não Reportado no momento" ? `<span style="color: grey;">${noticiario}</span>` : `<span class="news-status">📺 ${noticiario}</span>`;
+                const tempoHtml = `<span class="weather-status" style="color: ${weather.color};">${weather.icon} ${weather.status}</span>`;
+
+                L.marker(ponto.coords, {icon: AccidentIcon})
+                    .bindPopup(`
+                        <div class="popup-info">
+                            <strong>🚨 ${ponto.nome}</strong><br>
+                            ${ponto.detalhe}<br><hr style="margin: 5px 0;">
+                            Tempo: ${tempoHtml}<br>
+                            Reportagem: ${noticiarioHtml}
+                        </div>
+                    `)
+                    .addTo(riskMarkersLayer);
+            });
+            map.invalidateSize(); 
+        }
+        
+        // === GEOLOCALIZAÇÃO DO USUÁRIO ===
+
+        function onLocationFound(e) {
+            locMessage.textContent = "✅ Sua localização foi encontrada!";
+            locMessage.style.color = "#fff"; 
+            
+            if (userLocationMarker) { userLocationMarker.remove(); }
+            
+            userLocationMarker = L.layerGroup([
+                L.circleMarker(e.latlng, { radius: 8, color: '#007bff', fillColor: '#007bff', fillOpacity: 1 }).bindPopup("<strong>Você está aqui.</strong>").openPopup(),
+                L.circle(e.latlng, e.accuracy / 2, { color: '#007bff', fillColor: '#007bff', fillOpacity: 0.1, weight: 1 })
+            ]).addTo(map);
+
+            if (map.getZoom() < 13) { map.setView(e.latlng, 16); }
+        }
+
+        function onLocationError(e) {
+            locMessage.textContent = `❌ Erro ao localizar: ${e.message}. Exibindo centro de POA.`;
+            locMessage.style.color = "#ffdd00"; 
+        }
+
+        // === INICIALIZAÇÃO E EVENT LISTENERS ===
+
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+
+        map.locate({setView: false, watch: true, enableHighAccuracy: true});
+        
+        updateMapData();
+        setInterval(updateMapData, 10000); 
+
+        window.addEventListener('load', function() {
+            map.invalidateSize();
+        });
+    </script>
 </body>
-
-<script src="map_tra.js">
-
-</script>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--i'm gonna kill myself-->
