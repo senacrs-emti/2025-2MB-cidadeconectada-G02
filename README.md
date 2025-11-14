@@ -4,7 +4,7 @@ Nosso  projeto é um mapa que mostra onde estão ocorrendo acidentes de trânsit
 
 ## 🚀 Começando
 
-Você vai instalar esse arquivo Zip e rodar num VsCode .
+Você vai instalar esse arquivo Zip e rodar no VsCode .
 
 
 ### 📋 Pré-requisitos
@@ -86,8 +86,4 @@ Você também pode ver a lista de todos os [colaboradores](https://github.com/us
 Este projeto está sob a licença (sua licença) - veja o arquivo [LICENSE.md](https://github.com/usuario/projeto/licenca) para detalhes.
 
 ## 🎁 Expressões de gratidão
-
-* Conte a outras pessoas sobre este projeto 📢;
-* Convide alguém da equipe para uma cerveja 🍺;
-* Um agradecimento publicamente 🫂;
-* etc.
+Obrigado por ver nosso projeto.
