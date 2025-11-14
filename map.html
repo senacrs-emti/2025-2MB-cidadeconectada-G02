@@ -1,68 +1,271 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Trânsito Inteligente de POA | Mapa e Prevenção</title>
+    <title>Sistema de Monitoramento de ocorrências de Trânsito | Mapa, Leis e Prevenção | Advanced Interactive</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playwrite+DE+SAS:wght@100..400&family=Roboto:wght@300;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playwrite+DE+SAS:wght@100..400&family=Roboto:ital,wght@1,700;0,300;0,700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-color: #0056b3; 
-            --secondary-color: #1e90ff; 
-            --background-color: #f4f4f4;
-            --text-color: #333;
-            --highlight-color: #ff8c00; 
-            --safe-color: #28a745; 
-            --red-alert: red;
-        }
-        /* Estilos base (mantidos do original para consistência) */
-        body { background-color: var(--background-color); color: var(--text-color); font-family: 'Roboto', sans-serif; text-align: center; margin: 0; padding: 0; }
-        .landing-container { width: 90%; max-width: 1100px; padding: 40px; margin: 50px auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
-        h1 { font-family: 'Playwrite DE SAS', cursive; font-size: 3em; color: var(--primary-color); margin-bottom: 10px; }
-        .slogan { font-size: 1.5em; color: #6c757d; margin-bottom: 40px; }
-        .features { display: flex; justify-content: space-around; margin-bottom: 50px; flex-wrap: wrap; }
-        .feature-item { flex-basis: 30%; padding: 20px 10px; border-radius: 10px; transition: transform 0.3s, box-shadow 0.3s; }
-        .feature-item:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
-        .feature-item i { font-size: 2.5em; color: var(--secondary-color); margin-bottom: 10px; }
-        .cta-button { display: inline-block; padding: 15px 30px; font-size: 1.2em; font-weight: bold; color: white; background-color: var(--highlight-color); border: none; border-radius: 8px; text-decoration: none; transition: background-color 0.3s, transform 0.1s; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4); }
-        .cta-button:hover { background-color: #e67e22; transform: translateY(-2px); }
-        .prevention-section { background-color: #e8f5e9; padding: 30px 20px; border-radius: 10px; margin-top: 30px; }
-        .prevention-section h2 { color: var(--safe-color); font-size: 2em; margin-bottom: 25px; }
-        .prevention-grid { display: flex; justify-content: space-around; gap: 20px; }
-        .prevention-tip { flex-basis: 30%; }
-        .prevention-tip i { font-size: 3em; color: var(--safe-color); margin-bottom: 10px; border: 3px solid var(--safe-color); border-radius: 50%; padding: 15px; }
-        .prevention-tip h3 { color: var(--text-color); font-size: 1.2em; }
-        .map-section-header { padding: 40px 0 20px; background-color: var(--primary-color); color: white; margin-top: 30px; }
-        .map-section-header h2 { font-family: 'Playwrite DE SAS', sans-serif; font-size: 2.5em; margin: 0; }
-        #map { height: 500px; width: 90%; margin: 20px auto; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
-        #location-message { margin: 10px auto; color: #fff; font-weight: bold; }
-        /* Botão de Localização Reposicionado para o centro do container do mapa */
-        #locate-button { position: absolute; top: 120px; right: 6%; z-index: 1000; background-color: white; border: 2px solid #ccc; border-radius: 5px; padding: 8px; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); font-size: 1.2em; color: var(--primary-color); }
-        
-        /* Ícone de Acidente (Simulação de Alerta) */
-        .accident-icon { background-color: var(--red-alert); border-radius: 50%; border: 3px solid white; color: white; text-align: center; line-height: 24px; font-weight: bold; font-size: 16px; width: 24px; height: 24px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); } }
-        
-        /* Estilos do Popup */
-        .news-status { font-weight: bold; color: var(--highlight-color); }
-        .weather-status { font-weight: bold; color: var(--secondary-color); }
-        .popup-info { line-height: 1.6; text-align: left; }
+            /* CORES DA BANDEIRA DO RIO GRANDE DO SUL */
+            --rs-green: #008240; /* Verde */
+            --rs-red: #CF2027;   /* Vermelho */
+            --rs-yellow: #FFC72C; /* Amarelo/Dourado (Destque) */
+            --rs-white: #ffffff; /* Branco */
 
-        /* Responsividade (Mantida do original) */
+            /* Mapeamento das Variáveis do Site para as Cores do RS */
+            --primary-color: var(--rs-green); 
+            --secondary-color: var(--rs-yellow); 
+            --background-color: var(--rs-green); 
+            --text-color: #333; 
+            --highlight-color: var(--rs-yellow); 
+            --safe-color: var(--rs-green); 
+            --red-alert: var(--rs-red); 
+            --danger-color: var(--rs-red); 
+            --warning-color: var(--rs-yellow); 
+            --critical-color: #8b0000; 
+        }
+        
+        /* Estilos base */
+        body { 
+            background-color: var(--background-color); 
+            color: var(--text-color); 
+            font-family: 'Roboto', sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            padding: 0; 
+        }
+        .landing-container { 
+            width: 90%; 
+            max-width: 1100px; 
+            padding: 40px; 
+            margin: 50px auto; 
+            background: var(--rs-white); 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+        }
+
+        /* === NOVO ESTILO PARA TÍTULOS (Sans-Serif Bold Italic) === */
+        h1, h2, h3 {
+            font-family: 'Roboto', sans-serif !important; 
+            font-weight: 700 !important; /* Bold */
+            font-style: italic !important; /* Italic */
+        }
+        
+        h1 { 
+            font-size: 3em; 
+            color: var(--rs-red); 
+            margin-bottom: 10px; 
+        }
+        .slogan { 
+            font-size: 1.5em; 
+            color: var(--rs-green); 
+            font-weight: bold; 
+            margin-bottom: 40px; 
+            animation: fadeInSlogan 1.5s ease-out; 
+        }
+        @keyframes fadeInSlogan { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .feature-item i { font-size: 2.5em; color: var(--rs-red); margin-bottom: 10px; }
+        
+        .cta-button { 
+            display: inline-block; 
+            padding: 15px 30px; 
+            font-size: 1.2em; 
+            font-weight: bold; 
+            color: var(--rs-red); 
+            background-color: var(--highlight-color); 
+            border: none; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            transition: background-color 0.3s, transform 0.1s; 
+            box-shadow: 0 4px 15px rgba(255, 199, 44, 0.6); 
+        }
+        .cta-button:hover { 
+            background-color: #e6b229; 
+            transform: translateY(-2px); 
+            color: var(--rs-green); 
+        }
+        
+        .prevention-section { 
+            background-color: #e8f5e9; 
+            padding: 30px 20px; 
+            border-radius: 10px; 
+            margin-top: 30px; 
+        }
+        .prevention-section h2 { color: var(--safe-color); font-size: 2em; margin-bottom: 25px; }
+        .prevention-tip i { font-size: 3em; color: var(--safe-color); margin-bottom: 10px; border: 3px solid var(--safe-color); border-radius: 50%; padding: 15px; }
+        
+        .traffic-laws-section { border-top: 2px solid var(--rs-red); }
+        .traffic-laws-section h2 { color: var(--rs-red); }
+        .law-card { 
+            background-color: #fff9f9; 
+            border-left: 5px solid var(--danger-color); 
+        }
+        .law-card h3 { color: var(--danger-color); }
+        .law-card .penalty { 
+            font-weight: bold; 
+            color: var(--rs-green); 
+            border-top: 1px dashed #e6e6e6; 
+        }
+
+        .official-links {
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .official-links a { 
+            background-color: var(--rs-red); 
+            color: var(--rs-white); 
+        }
+        .official-links a:hover { 
+            background-color: #a81c21; 
+        }
+
+        /* Estilos do Mapa */
+        .map-section-header { 
+            padding: 40px 0 20px; 
+            background-color: var(--rs-red); 
+            color: var(--rs-white); 
+            margin-top: 30px; 
+        }
+        .map-section-header h2 { 
+            font-size: 2.5em; 
+            margin: 0; 
+        }
+        #map-container {
+            background-color: var(--rs-red);
+            padding-bottom: 40px; 
+            position: relative;
+        }
+        #map { height: 600px; width: 90%; margin: 20px auto; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 10;}
+        #location-message { margin: 10px auto; color: var(--rs-yellow); font-weight: bold; }
+        
+        /* Controles de Filtro no topo do Mapa */
+        .map-controls { 
+            position: absolute; 
+            top: 20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 1000; 
+            background: var(--rs-white); 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            border: 1px solid var(--rs-red);
+        }
+        .map-controls label {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: var(--rs-green); 
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Botão de Localização */
+        #locate-button { 
+            position: absolute; 
+            top: 105px; 
+            right: 6%; 
+            z-index: 1000; 
+            background-color: var(--rs-white); 
+            border: 2px solid #ccc; 
+            border-radius: 5px; 
+            padding: 8px; 
+            cursor: pointer; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+            font-size: 1.2em; 
+            color: var(--rs-red); 
+            transition: background-color 0.2s; 
+        }
+        #locate-button:hover { background-color: #f0f0f0; }
+        
+        /* Botões de Filtro de Fluxo */
+        #flow-filters {
+            position: absolute;
+            top: 105px;
+            left: 6%;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .flow-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.1s, opacity 0.2s;
+            opacity: 0.85;
+            min-width: 120px;
+        }
+        .flow-button:hover {
+            transform: translateY(-1px);
+            opacity: 1;
+        }
+        .flow-button.active {
+            border: 3px solid var(--rs-white);
+            transform: scale(1.05);
+            opacity: 1;
+        }
+        
+        /* Cores dos Botões de Fluxo */
+        #filter-flow-livre { background-color: var(--rs-green); color: var(--rs-white); }
+        #filter-flow-lento { background-color: var(--rs-yellow); color: var(--text-color); }
+        #filter-flow-congestionado { background-color: var(--rs-red); color: var(--rs-white); }
+
+        /* Estilos do Popup */
+        .news-status { font-weight: bold; color: var(--rs-yellow); }
+        .weather-status { font-weight: bold; color: var(--rs-yellow); }
+        
+        /* Campo de Pesquisa */
+        #search-box {
+            position: absolute;
+            top: 20px;
+            left: 6%;
+            z-index: 1000;
+            display: flex;
+            gap: 5px;
+        }
+        #search-input {
+            padding: 8px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 200px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #search-button {
+            padding: 8px 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--rs-red);
+            color: var(--rs-white);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #search-button:hover { background-color: #a81c21; }
+
+        /* Responsividade (Ajustada para novos controles) */
         @media (max-width: 768px) {
-            h1 { font-size: 2em; }
-            .landing-container { margin: 20px auto; padding: 20px; }
-            .features, .prevention-grid { flex-direction: column; gap: 20px; }
-            .feature-item, .prevention-tip { flex-basis: 100%; }
-            .map-section-header h2 { font-size: 2em; }
-            #locate-button { top: 75px; right: 5%; }
+            .map-controls { top: auto; bottom: 20px; left: 50%; width: 90%; transform: translateX(-50%); padding: 10px; flex-direction: row; justify-content: space-around; gap: 5px;}
+            #locate-button { top: 20px; right: 5%; }
+            #flow-filters { display: none; /* Esconde no mobile para simplificar */ }
+            #search-box { top: 70px; left: 50%; transform: translateX(-50%); width: 90%; }
+            #search-input { width: 100%; }
+            #search-button { min-width: 80px; }
         }
     </style>
     
@@ -73,14 +276,14 @@
         
         <header>
             <h1>Sistema de Monitoramento de Trânsito Inteligente de POA</h1>
-            <p class="slogan">Navegue pela cidade com inteligência. Sua segurança em primeiro lugar.</p>
+            <p class="slogan">Celular e Álcool: Mãos no Volante, Mente na Vida. Não Arrisque!</p>
         </header>
 
         <a href="#map-anchor" class="cta-button">
             Ver Mapa em Tempo Real
         </a>
         
-        <hr style="margin: 50px 0; border-color: #eee;">
+        <hr style="margin: 50px 0; border-color: var(--rs-red);">
 
         <div class="features">
             <div class="feature-item">
@@ -90,7 +293,7 @@
             </div>
             
             <div class="feature-item">
-                <i class="fas fa-car-crash" style="color: red;"></i>
+                <i class="fas fa-car-crash" style="color: var(--rs-red);"></i>
                 <h3>Pontos Críticos de Acidentes</h3>
                 <p>Identifique cruzamentos de alto risco e acidentes atuais, incluindo cobertura de noticiários.</p>
             </div>
@@ -102,12 +305,11 @@
             </div>
         </div>
         
-        <hr style="margin: 50px 0; border-color: #eee;">
+        <hr style="margin: 50px 0; border-color: var(--rs-red);">
 
         <section class="prevention-section">
             <h2>Como Evitar Acidentes: Dicas Essenciais</h2>
             <div class="prevention-grid">
-                
                 <div class="prevention-tip">
                     <i class="fas fa-tachometer-alt"></i>
                     <h3>Respeite os Limites</h3>
@@ -115,7 +317,7 @@
                 </div>
                 
                 <div class="prevention-tip">
-                    <i class="fas fa-mobile-alt" style="color: var(--highlight-color);"></i>
+                    <i class="fas fa-mobile-alt" style="color: var(--rs-yellow);"></i>
                     <h3>Celular Fica no Bolso</h3>
                     <p>Mantenha o foco total na direção. O uso do celular triplica o risco de colisão e distração.</p>
                 </div>
@@ -128,6 +330,61 @@
             </div>
         </section>
         
+        <hr style="margin: 50px 0; border-color: var(--rs-red);">
+
+        <section class="traffic-laws-section">
+            <a id="leis-anchor"></a>
+            <h2>📜 Leis de Trânsito: O CTB e Sua Segurança</h2>
+            <p>O Código de Trânsito Brasileiro (CTB) visa proteger a vida. Conheça as infrações de alto risco e suas consequências.</p>
+
+            <div class="law-grid">
+                <div class="law-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Excesso de Velocidade</h3>
+                    <p>Transitar em velocidade **superior à máxima em mais de 50%** é uma das infrações mais perigosas e uma das maiores causas de óbitos no trânsito de POA.</p>
+                    <span class="penalty">Infração Gravíssima. **Multa (3x)** e Suspensão Imediata do Direito de Dirigir (Art. 218, III).</span>
+                </div>
+
+                <div class="law-card">
+                    <h3><i class="fas fa-mobile-alt"></i> Manusear Celular</h3>
+                    <p>Dirigir utilizando o celular, seja falando ou manuseando (redes sociais, SMS, etc.), é considerado uma distração gravíssima, equiparada a dirigir sob efeito de álcool.</p>
+                    <span class="penalty">Infração Gravíssima. **7 pontos** na CNH e multa. (Art. 252, Parágrafo único).</span>
+                </div>
+                
+                <div class="law-card">
+                    <h3><i class="fas fa-cocktail"></i> Dirigir Sob Álcool (Lei Seca)</h3>
+                    <p>Qualquer concentração de álcool por litro de sangue ou por ar alveolar (bafômetro) sujeita o condutor às penalidades. O álcool reduz drasticamente a capacidade de reação.</p>
+                    <span class="penalty">Infração Gravíssima. **Multa (10x)**, Suspensão por 12 meses e retenção do veículo. (Art. 165).</span>
+                </div>
+
+                <div class="law-card">
+                    <h3><i class="fas fa-traffic-light"></i> Avançar Sinal Vermelho</h3>
+                    <p>Esta atitude é responsável por colisões laterais gravíssimas, especialmente nos cruzamentos críticos de Porto Alegre. O risco é altíssimo para todos os usuários da via.</p>
+                    <span class="penalty">Infração Gravíssima. **7 pontos** na CNH e multa. (Art. 208).</span>
+                </div>
+            </div>
+            
+            <hr style="margin: 40px 0; border-color: var(--rs-red);">
+
+            <div class="official-links">
+                <h3>Acesse a Legislação Completa e Transparência</h3>
+                <a href="https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-book"></i> Código de Trânsito Brasileiro (CTB)
+                </a>
+                <a href="https://prefeitura.poa.br/eptc/legislacao" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-gavel"></i> Legislação da EPTC (POA)
+                </a>
+                <a href="https://eptctransparente.com.br/" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-chart-bar"></i> EPTC Transparente (Dados de Trânsito)
+                </a>
+                <a href="https://escola.detran.rs.gov.br/" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-graduation-cap"></i> Escola Pública de Mobilidade (DetranRS)
+                </a>
+            </div>
+            
+            <p style="text-align: center; margin-top: 30px; font-size: 0.9em; color: var(--rs-green);">
+                <strong>Lembre-se:</strong> O principal objetivo da fiscalização é garantir que todos cheguem seguros em casa. Dirija com responsabilidade.
+            </p>
+        </section>
         <footer>
             <p style="font-size: 0.9em; color: #999; margin-top: 30px;">&copy; 2025 POA Smart Traffic. Todos os direitos reservados.</p>
         </footer>
@@ -141,80 +398,154 @@
         </div>
     </section>
 
-    <div style="background-color: white; padding-bottom: 40px; position: relative;">
+    <div id="map-container">
+        <div id="search-box">
+            <input type="text" id="search-input" placeholder="Buscar endereço ou ponto de interesse...">
+            <button id="search-button"><i class="fas fa-search"></i> Buscar</button>
+        </div>
+
+        <div id="flow-filters">
+            <button id="filter-flow-livre" class="flow-button active" data-flow="Verde">Fluxo Livre</button>
+            <button id="filter-flow-lento" class="flow-button" data-flow="Amarelo">Tráfego Lento</button>
+            <button id="filter-flow-congestionado" class="flow-button" data-flow="Vermelho">Congestionamento</button>
+        </div>
+
         <button id="locate-button" onclick="map.locate({setView: true, maxZoom: 16})">
             <i class="fas fa-location-crosshairs"></i>
         </button>
 
+        <div class="map-controls">
+            <label>
+                <input type="checkbox" id="filter-accidents" checked>
+                Acidentes/Pontos Críticos
+            </label>
+            <label>
+                <input type="checkbox" id="filter-events" checked>
+                Eventos/Obras (Sim.)
+            </label>
+            <label>
+                <input type="checkbox" id="filter-routes" checked>
+                Rotas de Risco/Congestionamento
+            </label>
+        </div>
+
         <div id="map"></div>
-        <p style="font-size: 0.8em; color: #666;">Dados de mapa base fornecidos por &copy; OpenStreetMap contributors. <span id="update-time">(Atualização a cada 10s)</span></p>
+        <p style="font-size: 0.8em; color: var(--rs-white);">Dados de mapa base fornecidos por &copy; OpenStreetMap contributors. <span id="update-time">(Atualização a cada 10s)</span></p>
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <script>
-        // === VARIÁVEIS GLOBAIS E CONFIGURAÇÃO ===
+        // === VARIÁVEIS GLOBAIS E CONFIGURAÇÃO AVANÇADA ===
         const portoAlegreCoords = [-30.0346, -51.2177]; 
+        const map = L.map('map').setView(portoAlegreCoords, 13); // Nível de zoom 13 mostra a maioria das ruas
         const locMessage = document.getElementById('location-message');
         const updateTimeDisplay = document.getElementById('update-time');
         
-        var map = L.map('map').setView(portoAlegreCoords, 12);
-        const riskMarkersLayer = L.layerGroup().addTo(map);
-        let userLocationMarker = null; 
-
+        // Adiciona a camada base do mapa (MANTIDA EM PRIMEIRO)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        const AccidentIcon = L.divIcon({
-            className: 'accident-icon',
-            html: '!',
-            iconSize: [24, 24],
-            popupAnchor: [0, -12]
-        });
+        // Camadas de Marcadores
+        const accidentMarkersLayer = L.layerGroup().addTo(map);
+        const eventMarkersLayer = L.layerGroup().addTo(map);
+        const trafficFlowLayer = L.layerGroup().addTo(map);
+        let userLocationMarker = null; 
+        
+        // Estado Global de Filtro de Fluxo
+        let activeFlowFilter = 'Verde'; // 'Verde', 'Amarelo', 'Vermelho'
 
-        // Pontos de Risco Baseados em Dados Reais da EPTC/Notícias de POA
+        // Armazenamento de dados simulados 
+        let simulatedMapData = [];
+
+        // Ícones Customizados (MANTIDOS)
+        const getCustomIcon = (type) => {
+            let className = 'map-icon';
+            let htmlContent = '';
+            switch (type) {
+                case 'ACCIDENT':
+                    className += ' map-icon-accidents';
+                    htmlContent = '⚠️';
+                    break;
+                case 'CRITICAL':
+                    className += ' map-icon-critical';
+                    htmlContent = '‼️';
+                    break;
+                case 'EVENT':
+                    className += ' map-icon-event';
+                    htmlContent = '🚧';
+                    break;
+                default:
+                    className += ' map-icon-accidents';
+                    htmlContent = '!';
+            }
+            return L.divIcon({
+                className: className,
+                html: htmlContent,
+                iconSize: [28, 28],
+                popupAnchor: [0, -14]
+            });
+        };
+
         const pontosDeRiscoData = [
-            { coords: [-30.0460, -51.1818], nome: "Ipiranga x Salvador França", detalhe: "Maior volume de acidentes de colisão no geral, ponto mais perigoso (2021/2022)." }, 
-            { coords: [-30.0525, -51.2010], nome: "Ipiranga x Azenha", detalhe: "Alto índice de ocorrências, entre os três mais perigosos." }, 
-            { coords: [-30.0385, -51.2260], nome: "Ipiranga x Borges de Medeiros", detalhe: "Ponto de grande fluxo e risco, entre os três mais perigosos." }, 
-            { coords: [-30.0430, -51.1920], nome: "Ipiranga x Silva Só / São Manoel", detalhe: "Concentração de acidentes, 2º maior em ocorrências em 2017." }, 
-            { coords: [-29.9880, -51.1390], nome: "Dona Margarida x Edu Chaves", detalhe: "Ponto crítico na Zona Norte, alto número de colisões/atropelamentos." }, 
-            { coords: [-30.0400, -51.2170], nome: "Av. Bento Gonçalves", detalhe: "Via com maior quantidade de acidentes fatais (2019-2023)." }, 
-            { coords: [-30.0050, -51.1550], nome: "Av. Assis Brasil", detalhe: "Volume de tráfego enorme, segunda via em acidentes fatais." }, 
-            { coords: [-30.0620, -51.1780], nome: "Av. Protásio Alves", detalhe: "Via com alta acidentalidade e risco de atropelamento. (Simulação de ponto)." }, 
-            { coords: [-30.0500, -51.2250], nome: "Av. Padre Cacique", detalhe: "Histórico de acidentes, incluindo fatais (Simulação de ponto)." }, 
-            { coords: [-30.0150, -51.2290], nome: "Av. Farrapos x Sarmento Barata", detalhe: "Histórico de colisões/atropelamentos." }, 
-            { coords: [-30.0300, -51.2100], nome: "Túnel da Conceição / Entorno", detalhe: "Fluxo rápido e entrada no centro. (Simulado)" },
+            { coords: [-30.0460, -51.1818], nome: "Ipiranga x Salvador França", detalhe: "Maior volume de acidentes de colisão no geral, ponto mais perigoso.", tipo: 'CRITICAL' }, 
+            { coords: [-30.0525, -51.2010], nome: "Ipiranga x Azenha", detalhe: "Alto índice de ocorrências.", tipo: 'CRITICAL' }, 
+            { coords: [-30.0385, -51.2260], nome: "Ipiranga x Borges de Medeiros", detalhe: "Ponto de grande fluxo e risco.", tipo: 'CRITICAL' }, 
+            { coords: [-29.9880, -51.1390], nome: "Dona Margarida x Edu Chaves", detalhe: "Ponto crítico na Zona Norte.", tipo: 'ACCIDENT' }, 
+            { coords: [-30.0400, -51.2170], nome: "Av. Bento Gonçalves", detalhe: "Via com maior quantidade de acidentes fatais.", tipo: 'CRITICAL' }, 
+            { coords: [-30.0050, -51.1550], nome: "Av. Assis Brasil", detalhe: "Volume de tráfego enorme.", tipo: 'ACCIDENT' }, 
+            { coords: [-30.0300, -51.2100], nome: "Túnel da Conceição / Entorno", detalhe: "Fluxo rápido e entrada no centro.", tipo: 'EVENT' },
+            { coords: [-30.0210, -51.2260], nome: "Rua Voluntários da Pátria (Próx. Mercado)", detalhe: "Simulação de evento/obra não programada.", tipo: 'EVENT' },
         ];
 
-        // === FUNÇÕES DE SIMULAÇÃO ===
+        const routeData = [
+            { nome: "Simulação Av. Ipiranga (Oeste)", coords: [[-30.0385, -51.2260], [-30.0460, -51.1818]] },
+            { nome: "Simulação Av. Assis Brasil (Norte)", coords: [[-30.0150, -51.1800], [-29.9800, -51.1400]] },
+        ];
+
+        // === FUNÇÕES DE SIMULAÇÃO AVANÇADA (MANTIDAS) ===
         function simulateWeather() {
             const weatherOptions = [
                 { status: "Céu Limpo", icon: "☀️", color: "#1e90ff" },
                 { status: "Nublado", icon: "☁️", color: "#6c757d" },
-                { status: "Chuva Fraca", icon: "🌧️", color: "#28a745" },
-                { status: "Chuva Forte (Risco)", icon: "⛈️", color: "red" },
-                { status: "Neblina", icon: "🌫️", color: "#6c757d" }
+                { status: "Chuva Fraca (Atenção)", icon: "var(--rs-green)", color: "var(--rs-green)" },
+                { status: "Chuva Forte (Risco)", icon: "⛈️", color: "var(--rs-red)" },
+                { status: "Neblina/Baixa Visibilidade", icon: "🌫️", color: "var(--rs-yellow)" }
             ];
             const randomIndex = Math.floor(Math.random() * weatherOptions.length);
             return weatherOptions[randomIndex];
         }
 
         function simulateNews() {
-            const newsOptions = ["GZH Trânsito (AO VIVO)", "Record RS", "Correio do Povo", "Não Reportado no momento"];
+            const newsOptions = ["GZH Trânsito (AO VIVO)", "Record RS", "Correio do Povo", "EPTC Live Feed", "Não Reportado no momento"];
             return newsOptions[Math.floor(Math.random() * newsOptions.length)];
         }
 
-        // === FUNÇÃO PRINCIPAL DE ATUALIZAÇÃO DO MAPA ===
-        function updateMapData() {
-            riskMarkersLayer.clearLayers(); 
-            updateTimeDisplay.textContent = `Atualizado: ${new Date().toLocaleTimeString('pt-BR')}`;
-            
-            // SIMULAÇÃO: Seleciona um número aleatório de pontos ativos
-            const minActive = 3;
-            const maxActive = Math.min(pontosDeRiscoData.length, 8); 
+        function simulateTrafficFlow() {
+            const flowOptions = [
+                { level: "Verde", color: "var(--rs-green)", label: "Livre" },
+                { level: "Amarelo", color: "var(--rs-yellow)", label: "Lento/Atenção" },
+                { level: "Vermelho", color: "var(--rs-red)", label: "Congestionado/Parado" },
+                { level: "Preto", color: "var(--critical-color)", label: "Bloqueado/Crítico" }
+            ];
+            const weights = [0.5, 0.3, 0.15, 0.05]; 
+            let random = Math.random();
+            let sum = 0;
+            for (let i = 0; i < weights.length; i++) {
+                sum += weights[i];
+                if (random < sum) return flowOptions[i];
+            }
+            return flowOptions[0];
+        }
+
+        // NOVO: Função para simular e armazenar todos os dados
+        function generateMapData() {
+            const data = { markers: [], routes: [] };
+
+            const minActive = 2;
+            const maxActive = Math.min(pontosDeRiscoData.length, 6); 
             const activeAccidentsCount = Math.floor(Math.random() * (maxActive - minActive + 1)) + minActive; 
             
             const shuffledPoints = pontosDeRiscoData.sort(() => 0.5 - Math.random());
@@ -222,36 +553,204 @@
 
             activePoints.forEach(ponto => {
                 const weather = simulateWeather();
-                const noticiario = simulateNews();
-                
-                const noticiarioHtml = noticiario === "Não Reportado no momento" ? `<span style="color: grey;">${noticiario}</span>` : `<span class="news-status">📺 ${noticiario}</span>`;
-                const tempoHtml = `<span class="weather-status" style="color: ${weather.color};">${weather.icon} ${weather.status}</span>`;
+                const flow = simulateTrafficFlow();
+                const markerType = Math.random() < 0.2 ? 'EVENT' : ponto.tipo;
 
-                L.marker(ponto.coords, {icon: AccidentIcon})
+                data.markers.push({
+                    coords: ponto.coords,
+                    name: ponto.nome,
+                    detail: ponto.detalhe,
+                    type: markerType,
+                    weather: weather,
+                    news: simulateNews(),
+                    flow: flow
+                });
+            });
+
+            routeData.forEach(route => {
+                data.routes.push({
+                    name: route.nome,
+                    coords: route.coords,
+                    flow: simulateTrafficFlow()
+                });
+            });
+
+            return data;
+        }
+
+        // === FUNÇÃO PRINCIPAL PARA RENDERIZAR E FILTRAR O MAPA ===
+        function renderMapData(data, flowFilter = 'all') {
+            accidentMarkersLayer.clearLayers(); 
+            eventMarkersLayer.clearLayers(); 
+            trafficFlowLayer.clearLayers(); 
+
+            // 1. Renderizar Marcadores
+            data.markers.forEach(p => {
+                // Aplica o filtro de fluxo
+                if (flowFilter !== 'all' && p.flow.level !== flowFilter) {
+                    return; 
+                }
+
+                const noticiarioHtml = p.news.includes("Não Reportado") ? `<span style="color: grey;">${p.news}</span>` : `<span class="news-status" style="color: var(--rs-yellow);">📺 ${p.news}</span>`;
+                const tempoHtml = `<span class="weather-status" style="color: ${p.weather.color};">${p.weather.icon} ${p.weather.status}</span>`;
+                const flowHtml = `<span style="font-weight: bold; color: ${p.flow.color};">${p.flow.label}</span>`;
+
+                const markerIcon = getCustomIcon(p.type);
+
+                const marker = L.marker(p.coords, {icon: markerIcon})
                     .bindPopup(`
                         <div class="popup-info">
-                            <strong>🚨 ${ponto.nome}</strong><br>
-                            ${ponto.detalhe}<br><hr style="margin: 5px 0;">
+                            <strong>${p.type === 'EVENT' ? '🚧 OCORRÊNCIA/EVENTO' : '🚨 PONTO DE RISCO'}: ${p.name}</strong><br>
+                            ${p.detail}<br><hr style="margin: 5px 0;">
+                            <strong>Fluxo Simulado:</strong> ${flowHtml}<br>
                             Tempo: ${tempoHtml}<br>
                             Reportagem: ${noticiarioHtml}
                         </div>
-                    `)
-                    .addTo(riskMarkersLayer);
+                    `);
+                    
+                if (p.type === 'EVENT') {
+                    marker.addTo(eventMarkersLayer);
+                } else {
+                    marker.addTo(accidentMarkersLayer);
+                }
             });
+            
+            // 2. Renderizar Rotas 
+            data.routes.forEach(route => {
+                // Aplica o filtro de fluxo para rotas
+                 if (flowFilter !== 'all' && route.flow.level !== flowFilter) {
+                    return; 
+                }
+                
+                L.polyline(route.coords, {
+                    color: route.flow.color,
+                    weight: 6,
+                    opacity: 0.7,
+                    dashArray: '10, 5' 
+                }).bindPopup(`<strong>Rota de Risco:</strong> ${route.name}<br><strong>Condição:</strong> <span style="font-weight: bold; color: ${route.flow.color};">${route.flow.label}</span>`).addTo(trafficFlowLayer);
+            });
+
+
             map.invalidateSize(); 
         }
-        
-        // === GEOLOCALIZAÇÃO DO USUÁRIO ===
 
+        // Função wrapper para atualizar tudo
+        function updateAllData(refreshData = true) {
+            if (refreshData) {
+                // Sorteia novos dados a cada 10s
+                simulatedMapData = generateMapData();
+            }
+            
+            // Aplica os filtros atuais
+            const currentFlowFilter = activeFlowFilter === 'all' ? 'all' : (activeFlowFilter === 'Livre' ? 'Verde' : (activeFlowFilter === 'Lento' ? 'Amarelo' : 'Vermelho'));
+            renderMapData(simulatedMapData, currentFlowFilter);
+            
+            updateTimeDisplay.textContent = `Atualizado: ${new Date().toLocaleTimeString('pt-BR')}`;
+            map.invalidateSize();
+        }
+
+        // === LÓGICA DE FILTRO DE CAMADAS (CHECKBOXES) ===
+        const filterAccidents = document.getElementById('filter-accidents');
+        const filterEvents = document.getElementById('filter-events');
+        const filterRoutes = document.getElementById('filter-routes');
+
+        function toggleLayer(layer, checkbox) {
+            if (checkbox.checked) {
+                map.addLayer(layer);
+            } else {
+                map.removeLayer(layer);
+            }
+        }
+
+        // Conecta as checkboxes às camadas
+        filterAccidents.addEventListener('change', () => toggleLayer(accidentMarkersLayer, filterAccidents));
+        filterEvents.addEventListener('change', () => toggleLayer(eventMarkersLayer, filterEvents));
+        filterRoutes.addEventListener('change', () => toggleLayer(trafficFlowLayer, filterRoutes));
+
+        // === LÓGICA DE FILTRO DE FLUXO (BOTÕES) ===
+        document.querySelectorAll('.flow-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const flow = this.getAttribute('data-flow');
+                
+                // Toggle state
+                if (activeFlowFilter === flow) {
+                    activeFlowFilter = 'all';
+                    this.classList.remove('active');
+                } else {
+                    // Limpa todos os ativos e define o novo
+                    document.querySelectorAll('.flow-button').forEach(btn => btn.classList.remove('active'));
+                    activeFlowFilter = flow;
+                    this.classList.add('active');
+                }
+                
+                // Renderiza os dados com o novo filtro (refreshData=false, usa dados simulados atuais)
+                updateAllData(false);
+            });
+        });
+
+        // === LÓGICA DE PESQUISA (SIMULADA) ===
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+
+        searchButton.addEventListener('click', function() {
+            const query = searchInput.value.trim().toLowerCase();
+            if (query === '') return;
+
+            // Simulação de Geocoding
+            let targetCoords = null;
+            let found = false;
+
+            if (query.includes('centro') || query.includes('conceição')) {
+                targetCoords = [-30.0300, -51.2100];
+                found = true;
+            } else if (query.includes('ipiranga') || query.includes('azenha')) {
+                targetCoords = [-30.0525, -51.2010];
+                found = true;
+            } else if (query.includes('assisa')) {
+                targetCoords = [-30.0050, -51.1550];
+                found = true;
+            } else if (query.includes('minha localização')) {
+                 map.locate({setView: true, maxZoom: 16}); // Usa localização real
+                 return;
+            } else {
+                 // Simula um ponto genérico ou falha
+                 targetCoords = [-30.0346, -51.2177];
+            }
+
+            map.setView(targetCoords, 15);
+            
+            if (found) {
+                locMessage.textContent = `📍 Busca bem-sucedida: ${query.toUpperCase()}`;
+                locMessage.style.color = 'var(--rs-yellow)';
+            } else {
+                locMessage.textContent = `🔎 Não encontramos ${query}. Centralizando em POA.`;
+                locMessage.style.color = 'var(--rs-yellow)';
+            }
+            
+            // Adiciona um marcador temporário para a busca
+            const searchMarker = L.marker(targetCoords).bindPopup(`Resultado da busca: ${query}`).openPopup();
+            
+            // Remove o marcador após 5 segundos
+            setTimeout(() => { searchMarker.remove(); }, 5000);
+        });
+        
+        // Permite busca ao pressionar Enter
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+
+        // === GEOLOCALIZAÇÃO E ERROS (MANTIDOS) ===
         function onLocationFound(e) {
             locMessage.textContent = "✅ Sua localização foi encontrada!";
-            locMessage.style.color = "#fff"; 
+            locMessage.style.color = "var(--rs-yellow)"; 
             
             if (userLocationMarker) { userLocationMarker.remove(); }
             
             userLocationMarker = L.layerGroup([
-                L.circleMarker(e.latlng, { radius: 8, color: '#007bff', fillColor: '#007bff', fillOpacity: 1 }).bindPopup("<strong>Você está aqui.</strong>").openPopup(),
-                L.circle(e.latlng, e.accuracy / 2, { color: '#007bff', fillColor: '#007bff', fillOpacity: 0.1, weight: 1 })
+                L.circleMarker(e.latlng, { radius: 8, color: 'var(--rs-red)', fillColor: 'var(--rs-red)', fillOpacity: 1 }).bindPopup("<strong>Você está aqui.</strong>").openPopup(),
+                L.circle(e.latlng, e.accuracy / 2, { color: 'var(--rs-red)', fillColor: 'var(--rs-red)', fillOpacity: 0.1, weight: 1 })
             ]).addTo(map);
 
             if (map.getZoom() < 13) { map.setView(e.latlng, 16); }
@@ -259,18 +758,19 @@
 
         function onLocationError(e) {
             locMessage.textContent = `❌ Erro ao localizar: ${e.message}. Exibindo centro de POA.`;
-            locMessage.style.color = "#ffdd00"; 
+            locMessage.style.color = "var(--rs-yellow)"; 
         }
 
         // === INICIALIZAÇÃO E EVENT LISTENERS ===
-
         map.on('locationfound', onLocationFound);
         map.on('locationerror', onLocationError);
 
         map.locate({setView: false, watch: true, enableHighAccuracy: true});
         
-        updateMapData();
-        setInterval(updateMapData, 10000); 
+        // Inicia a primeira carga de dados
+        updateAllData(true);
+        // Configura o intervalo de atualização
+        setInterval(() => updateAllData(true), 10000);
 
         window.addEventListener('load', function() {
             map.invalidateSize();
