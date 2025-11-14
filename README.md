@@ -11,9 +11,8 @@ Você vai instalar esse arquivo Zip e rodar no VsCode .
 
 De que coisas você precisa para instalar o software e como instalá-lo?
 
-```
 VS Code
-```
+
 
 ### 🔧 Instalação
 
