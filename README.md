@@ -27,29 +27,13 @@ Diga como essa etapa será:
 ## 🛠️ Construído com
 Este projeto sera contruido em HTML, JS e CSS 
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - O framework web usado
-* [Maven](https://maven.apache.org/) - Gerente de Dependência
-* [ROME](https://rometools.github.io/rome/) - Usada para gerar RSS
-
-## 📌 Versão
-
-Nós usamos [SemVer](http://semver.org/) para controle de versão. Para as versões disponíveis, observe as [tags neste repositório](https://github.com/suas/tags/do/projeto). 
-
 ## ✒️ Autores
-
-
 
  Adrei -- (https://github.com/AndreiBarbosaLacrda)
  
  Helena -- (https://github.com/HellyLena)
  
  Eddie --(https://github.com/EddieW18)
-
-Você também pode ver a lista de todos os [colaboradores](https://github.com/usuario/projeto/colaboradores) que participaram deste projeto.
-
-## 📄 Licença
-
-Este projeto está sob a licença (sua licença) - veja o arquivo [LICENSE.md](https://github.com/usuario/projeto/licenca) para detalhes.
 
 ## 🎁 Expressões de gratidão
 Obrigado por ver nosso projeto.
